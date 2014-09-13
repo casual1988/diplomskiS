@@ -8,7 +8,11 @@ package client;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -24,9 +28,15 @@ public class ClientServer extends Thread{
     private Socket sock;
     private BufferedReader in;
     private PrintWriter out;
+    private MessageData msg;
+    private ClientForm frm;
     
+     public ClientServer(){}
     
-    
+    public ClientServer(ClientForm frm)
+    {
+     this.frm = frm;
+    }
      public void  run(){//acceptClientMessage(){
         MessageData msg = new MessageData();
 try {
@@ -39,6 +49,13 @@ while (true) {
  in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
  out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(sock.getOutputStream())), true);
 String request; 
+InputStream is = sock.getInputStream();
+OutputStream os = sock.getOutputStream();
+
+    
+ // ObjectInputStream   ois = new ObjectInputStream(sock.getInputStream());
+ //        ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
+  //       received = ois.readObject();
 //while ((request = in.readLine()) != null) {
 //        System.out.println(request);
 //    out.println("haloo klijenntu 2 ,primio sam poruku");
@@ -48,7 +65,8 @@ String request;
  // msg.setOut(out);
           
  // WriterThread writer = new WriterThread(out, msg);        
-  ReaderThread reader = new ReaderThread(sock, in, msg);
+  //ReaderThread reader = new ReaderThread(sock, in, msg,frm);
+  ReaderThread reader = new ReaderThread(sock, is, msg,frm);
        
       }
 } catch (Exception ex) {
@@ -80,6 +98,12 @@ ex.printStackTrace();
     public void setOut(PrintWriter out) {
         this.out = out;
     }
+    public MessageData getMessage(){
+        return this.msg;
+            }
+    public void setMessage(MessageData msg){
+        this.msg = msg;
+            } 
      
      
 }
